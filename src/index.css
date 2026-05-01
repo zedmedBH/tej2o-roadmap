@@ -1,0 +1,917 @@
+/* =========================================
+   1. RESET & VARIABLES
+   ========================================= */
+
+.hidden {
+    display: none !important;
+}
+
+:root {
+    --bg-color: #f4f6f9;
+    --text-main: #2d3436;
+    --text-muted: #636e72;
+    --card-bg: #ffffff;
+    --line-color: #dfe6e9;
+    --shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.1);
+    --font-stack: 'Inter', sans-serif;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+    background-color: var(--bg-color);
+    font-family: var(--font-stack);
+    color: var(--text-main);
+    line-height: 1.6;
+    overflow-x: hidden;
+}
+
+/* =========================================
+   2. HEADER
+   ========================================= */
+.main-header {
+    text-align: center;
+    padding: 60px 20px 40px;
+    background: linear-gradient(135deg, #2d3436 0%, #000000 100%);
+    color: white;
+    margin-bottom: 40px;
+    clip-path: polygon(0 0, 100% 0, 100% 85%, 0 100%);
+}
+
+.main-header h1 {
+    font-size: 2.5rem;
+    font-weight: 800;
+    margin-bottom: 10px;
+}
+
+.main-header p {
+    font-size: 1.1rem;
+    opacity: 0.8;
+}
+
+/* =========================================
+   3. TIMELINE LAYOUT
+   ========================================= */
+.timeline-container {
+    position: relative;
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+/* The vertical road line */
+.timeline-line {
+    position: absolute;
+    left: 50%;
+    top: 0;
+    bottom: 0;
+    width: 6px;
+    background: var(--line-color);
+    transform: translateX(-50%);
+    border-radius: 4px;
+    z-index: 1;
+}
+
+.timeline-item {
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 60px;
+    width: 100%;
+}
+
+/* The Marker (Circle Number) */
+.timeline-marker {
+    position: absolute;
+    left: 50%;
+    width: 50px;
+    height: 50px;
+    background: white;
+    border: 4px solid #333; /* Will be colored by JS */
+    border-radius: 50%;
+    transform: translateX(-50%);
+    z-index: 5;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 800;
+    font-size: 1.2rem;
+    color: #333;
+    box-shadow: 0 0 0 6px var(--bg-color); /* fake gap between line and circle */
+    transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.timeline-item:hover .timeline-marker {
+    transform: translateX(-50%) scale(1.2);
+}
+
+/* =========================================
+   4. TIMELINE CARDS
+   ========================================= */
+.timeline-card {
+    width: 42%; /* Leaves space for center line */
+    background: var(--card-bg);
+    border-radius: 16px;
+    padding: 0;
+    box-shadow: var(--shadow);
+    cursor: pointer;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    z-index: 10;
+    position: relative;
+    overflow: hidden;
+}
+
+.timeline-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 20px 40px -10px rgba(0,0,0,0.2);
+}
+
+/* Colored Header strip inside card */
+.card-header-strip {
+    height: 12px;
+    width: 100%;
+}
+
+.card-content {
+    padding: 24px;
+}
+
+.card-title {
+    font-size: 1.25rem;
+    font-weight: 800;
+    margin-bottom: 4px;
+    color: #222;
+}
+
+.card-subtitle {
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-weight: 600;
+    margin-bottom: 12px;
+    display: inline-block;
+    padding: 4px 8px;
+    border-radius: 4px;
+    background: #eee; /* Fallback */
+    color: #fff;
+    font-size: 0.75rem;
+}
+
+.card-desc {
+    font-size: 0.95rem;
+    color: var(--text-muted);
+}
+
+/* Alternating Sides */
+.timeline-item:nth-child(odd) {
+    justify-content: flex-start;
+}
+
+.timeline-item:nth-child(even) {
+    justify-content: flex-end;
+}
+
+/* Connectors (The "Arms" connecting card to center) */
+.timeline-card::after {
+    content: '';
+    position: absolute;
+    top: 25px;
+    width: 0; 
+    height: 0; 
+    border-top: 10px solid transparent;
+    border-bottom: 10px solid transparent; 
+}
+
+/* Left side items */
+.timeline-item:nth-child(odd) .timeline-card {
+    margin-right: auto;
+}
+.timeline-item:nth-child(odd) .timeline-card::after {
+    right: -10px;
+    border-left: 10px solid white;
+}
+
+/* Right side items */
+.timeline-item:nth-child(even) .timeline-card {
+    margin-left: auto;
+}
+.timeline-item:nth-child(even) .timeline-card::after {
+    left: -10px;
+    border-right: 10px solid white;
+}
+
+/* =========================================
+   5. RESPONSIVE (MOBILE)
+   ========================================= */
+@media (max-width: 768px) {
+    .timeline-line {
+        left: 30px; /* Move line to left */
+    }
+    
+    .timeline-marker {
+        left: 30px; /* Align marker to left line */
+    }
+    
+    .timeline-item {
+        justify-content: flex-end !important; /* Always push card right */
+        padding-left: 70px; /* Make room for line */
+    }
+    
+    .timeline-card {
+        width: 100%;
+    }
+    
+    .timeline-card::after {
+        left: -10px !important;
+        right: auto !important;
+        border-right: 10px solid white !important;
+        border-left: none !important;
+    }
+
+    .main-header h1 { font-size: 1.8rem; }
+}
+
+/* =========================================
+   6. MODAL
+   ========================================= */
+#modal-overlay {
+    position: fixed;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(0,0,0,0.6);
+    backdrop-filter: blur(5px);
+    z-index: 1000;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+}
+
+#modal-overlay.active {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+#modal-card {
+    background: white;
+    width: 90%;
+    max-width: 500px;
+    border-radius: 20px;
+    padding: 30px;
+    position: relative;
+    max-height: 85vh;      /* Limits height to 85% of the viewport */
+    overflow-y: auto;      /* Adds a scrollbar if content is too long */
+    transform: translateY(20px);
+    transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+#modal-overlay.active #modal-card {
+    transform: translateY(0);
+}
+
+.close-btn {
+    position: absolute;
+    top: 15px;
+    right: 20px;
+    font-size: 2rem;
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: #999;
+}
+
+.close-btn:hover { color: #333; }
+
+/* Modal Content Styling */
+.modal-header h2 { font-size: 1.5rem; margin-bottom: 5px; }
+.modal-meta { font-size: 0.9rem; color: #666; margin-bottom: 20px; display: block;}
+.task-list { list-style: none; margin: 20px 0; }
+.task-list li { 
+    padding: 10px 0; border-bottom: 1px solid #eee; display: flex; align-items: center; 
+}
+.task-list li::before {
+    content: none !important;
+    display: none !important;
+    margin-right: 10px; color: green; font-weight: bold;
+}
+.btn-resource {
+    display: inline-block;
+    padding: 10px 18px;
+    background: #eef2ff;
+    color: #4f46e5;
+    text-decoration: none;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 0.9rem;
+    margin-top: 10px;
+    margin-right: 10px;
+    transition: background 0.2s;
+}
+.btn-resource:hover { background: #e0e7ff; }
+
+/* =========================================
+   7. APP UI UPDATES
+   ========================================= */
+
+/* Login Overlay */
+#login-overlay {
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    background: #2d3436; z-index: 2000;
+    display: flex; justify-content: center; align-items: center;
+}
+.login-card {
+    background: white; padding: 40px; border-radius: 12px; text-align: center;
+}
+#google-login-btn {
+    background: #4285F4; color: white; border: none; padding: 12px 24px;
+    border-radius: 4px; font-weight: 600; cursor: pointer; margin-top: 20px;
+}
+
+/* Navigation Bar */
+.app-nav {
+    position: fixed; top: 0; left: 0; width: 100%; height: 60px;
+    background: white; border-bottom: 1px solid #ddd; z-index: 100;
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 0 20px;
+}
+.app-nav.hidden { display: none; }
+.user-info { display: flex; align-items: center; gap: 10px; }
+#nav-user-photo { width: 32px; height: 32px; border-radius: 50%; }
+.badge { background: #6c5ce7; color: white; padding: 2px 8px; border-radius: 10px; font-size: 0.75rem; margin-left: 5px;}
+
+/* Admin Dashboard */
+.dashboard-panel {
+    position: fixed; top: 60px; left: 0; width: 100%; height: calc(100% - 60px);
+    background: #f4f6f9; z-index: 150; padding: 20px; overflow-y: auto;
+}
+.dashboard-panel.hidden { display: none; }
+.admin-grid {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 20px; max-width: 1000px; margin: 0 auto;
+}
+.admin-section {
+    background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+}
+.input-group { display: flex; gap: 15px; margin-bottom: 15px; }
+.input-group input { flex: 1; padding: 8px; border: 1px solid #ddd; border-radius: 4px; }
+.interactive-list { list-style: none; }
+.interactive-list li {
+    padding: 10px; border-bottom: 1px solid #eee; display: flex; justify-content: space-between; align-items: center;
+    cursor: pointer;
+}
+.interactive-list li:hover { background: #f8f9fa; }
+.interactive-list li.selected { background: #eef2ff; border-left: 4px solid #4f46e5; }
+
+/* Modal Form Controls */
+.modal-actions { margin-top: 20px; padding-top: 20px; }
+.modal-actions h3 { margin-bottom: 15px; font-size: 1.1rem; }
+.form-row { display: flex; gap: 15px; margin-bottom: 15px; }
+.form-group { flex: 1; display: flex; flex-direction: column; }
+.form-group label { font-size: 0.8rem; font-weight: 600; color: #666; margin-bottom: 5px; }
+.form-group select, .form-group input {
+    padding: 8px; border: 1px solid #ddd; border-radius: 4px; font-size: 0.95rem;
+}
+.btn-primary {
+    width: 100%; padding: 12px; background: #00b894; color: white; border: none;
+    border-radius: 6px; font-weight: bold; cursor: pointer;
+}
+.btn-primary:hover { background: #00a884; }
+
+/* Status Indicators on Timeline */
+.status-badge {
+    display: inline-block; padding: 2px 6px; font-size: 0.7rem; border-radius: 4px;
+    margin-right: 5px; font-weight: bold; text-transform: uppercase;
+}
+.status-Completed { background: #d4edda; color: #155724; }
+.status-InProgress { background: #fff3cd; color: #856404; }
+.status-Blocked { background: #f8d7da; color: #721c24; }
+
+.task-list {
+    list-style: none;
+    padding: 0;
+    margin: 20px 0;
+}
+
+.task-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 0;
+    border-bottom: 1px solid #f0f0f0;
+    gap: 15px;
+}
+
+.task-name {
+    flex: 1;
+    font-size: 0.95rem;
+    line-height: 1.4;
+}
+
+.task-select {
+    width: 130px;
+    padding: 4px;
+    font-size: 0.85rem;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    background-color: #f9f9f9;
+}
+
+.nav-dropdown {
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    margin-right: 10px;
+    font-size: 0.9rem;
+    background-color: #f8f9fa;
+    cursor: pointer;
+}
+.nav-dropdown:hover {
+    background-color: #e9ecef;
+}
+
+/* Global Button Reset */
+button {
+    font-family: 'Inter', sans-serif;
+    cursor: pointer;
+    border: none;
+    border-radius: 6px;
+    padding: 8px 16px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    transition: all 0.2s ease;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+}
+
+button:active {
+    transform: translateY(1px);
+    box-shadow: none;
+}
+
+/* --- Navigation Buttons --- */
+
+/* "Teacher Admin" - Purple Accent */
+#admin-btn {
+    background-color: #6c5ce7;
+    color: white;
+}
+#admin-btn:hover {
+    background-color: #5f4dd0;
+    box-shadow: 0 4px 10px rgba(108, 92, 231, 0.3);
+}
+
+/* "Sign Out" - Subtle Outline */
+#logout-btn {
+    background-color: white;
+    border: 1px solid #dfe6e9;
+    color: #636e72;
+    margin-left: 10px;
+}
+#logout-btn:hover {
+    border-color: #fab1a0;
+    color: #d63031; /* Red on hover */
+    background-color: #fff5f5;
+}
+
+/* --- Admin Panel Buttons --- */
+
+/* "Close" Button (Top left of Admin Panel) */
+#close-admin {
+    background-color: #2d3436;
+    color: white;
+    padding: 6px 12px;
+    font-size: 0.8rem;
+    margin-bottom: 15px;
+}
+#close-admin:hover {
+    background-color: #000;
+}
+
+/* "Create" & "Add Student" - Green Success Actions */
+#create-team-btn, #add-student-btn {
+    background-color: #00b894;
+    color: white;
+    margin-left: 10px;
+}
+#create-team-btn:hover, #add-student-btn:hover {
+    background-color: #00a884;
+    box-shadow: 0 4px 10px rgba(0, 184, 148, 0.3);
+}
+
+/* --- Input Fields & Dropdowns --- */
+
+input[type="text"], 
+input[type="email"], 
+input[type="date"], 
+select {
+    padding: 10px 12px;
+    border: 1px solid #dfe6e9;
+    border-radius: 6px;
+    font-family: 'Inter', sans-serif;
+    font-size: 0.95rem;
+    color: #2d3436;
+    background: white;
+    outline: none;
+    transition: border-color 0.2s;
+}
+
+/* Focus State (Blue Glow) */
+input:focus, select:focus {
+    border-color: #6c5ce7;
+    box-shadow: 0 0 0 3px rgba(108, 92, 231, 0.1);
+}
+
+#view-team-select {
+    /* 1. Turn off default browser arrow */
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+
+    /* 2. Add Custom Arrow Icon */
+    background-image: url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%23333%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E");
+    background-repeat: no-repeat;
+    background-position: right 12px center;
+    background-size: 12px;
+    background-color: white;
+
+    /* 3. Spacing & Borders */
+    padding: 8px 35px 8px 12px; /* Right padding creates space for the arrow */
+    border: 1px solid #dfe6e9;
+    border-radius: 6px;
+    font-family: 'Inter', sans-serif;
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: #2d3436;
+    cursor: pointer;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+    transition: all 0.2s ease;
+}
+
+#view-team-select:hover {
+    background-color: #f8f9fa;
+    border-color: #b2bec3;
+}
+
+#view-team-select:focus {
+    outline: none;
+    border-color: #6c5ce7;
+    box-shadow: 0 0 0 3px rgba(108, 92, 231, 0.1);
+}
+
+/* Remove Member Button (Small Red) */
+.remove-member-btn {
+    background-color: #fab1a0;
+    color: #d63031;
+    font-size: 0.75rem;
+    padding: 4px 10px;
+    border-radius: 4px;
+    margin-left: 10px;
+    font-weight: 700;
+    border: none;
+    cursor: pointer;
+}
+
+.remove-member-btn:hover {
+    background-color: #d63031;
+    color: white;
+}
+
+/* Fix List Layout for Members */
+#team-member-list li {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px;
+    border-bottom: 1px solid #f1f2f6;
+}
+
+.btn-danger {
+    background-color: #fab1a0;
+    color: #d63031;
+    border: 1px solid #fab1a0;
+    padding: 6px 12px;
+    font-size: 0.8rem;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: 700;
+    transition: all 0.2s;
+}
+
+.btn-danger:hover {
+    background-color: #d63031;
+    color: white;
+    border-color: #d63031;
+}
+
+/* =========================================
+   10. TASK STATUS TOGGLES
+   ========================================= */
+
+/* Hide the default browser checkbox */
+.task-status-checkbox {
+    appearance: none;
+    -webkit-appearance: none;
+    width: 20px;
+    height: 20px;
+    border: 2px solid #ddd;
+    border-radius: 4px;
+    margin-right: 15px;
+    cursor: pointer;
+    position: relative;
+    transition: all 0.2s;
+    flex-shrink: 0; /* Prevents squishing */
+}
+
+/* Checked State (Green Background) */
+.task-status-checkbox:checked {
+    background-color: #00C853; /* VEX Green */
+    border-color: #00C853;
+}
+
+/* Checkmark Icon (Hidden by default, shown when checked) */
+.task-status-checkbox:checked::after {
+    content: '✓';
+    color: white;
+    font-size: 14px;
+    font-weight: bold;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+/* Hover Effect */
+.task-status-checkbox:hover {
+    border-color: #00C853;
+}
+
+/* Strikethrough for completed task text */
+.task-status-checkbox:checked + .task-name {
+    text-decoration: line-through;
+    color: #b2bec3;
+}
+
+/* =========================================
+   12. SESSION ROLES (Build Cards)
+   ========================================= */
+
+.role-container {
+    background-color: #f8f9fa;
+    border: 1px solid #e9ecef;
+    border-radius: 8px;
+    padding: 15px;
+    margin-bottom: 20px;
+}
+
+.role-header {
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    color: #636e72;
+    font-weight: 800;
+    margin-bottom: 10px;
+    display: block;
+}
+
+.role-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr; /* Two columns */
+    gap: 12px;
+}
+
+.role-group {
+    display: flex;
+    flex-direction: column;
+}
+
+.role-label {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: #2d3436;
+    margin-bottom: 4px;
+}
+
+.role-select {
+    padding: 6px;
+    border: 1px solid #dfe6e9;
+    border-radius: 4px;
+    font-size: 0.85rem;
+    background: white;
+}
+
+/* =========================================
+   13. MULTI-SELECT ASSIGNEE TAGS
+   ========================================= */
+
+.assignee-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    align-items: center;
+    margin-top: 4px;
+    min-height: 28px;
+}
+
+/* The name badge */
+.assignee-tag {
+    background: #eef2ff;
+    color: #4f46e5;
+    border: 1px solid #c7d2fe;
+    border-radius: 12px;
+    padding: 2px 10px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    cursor: default;
+}
+
+/* The 'X' to remove */
+.assignee-remove {
+    cursor: pointer;
+    font-weight: bold;
+    font-size: 14px;
+    color: #818cf8;
+    line-height: 1;
+}
+.assignee-remove:hover {
+    color: #d63031;
+}
+
+/* The '+' Dropdown Button */
+.add-assignee-select {
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    border: 1px solid #ccc;
+    background-color: white;
+    cursor: pointer;
+    
+    /* Hide Text, Show Plus Icon */
+    color: transparent; 
+    appearance: none;
+    -webkit-appearance: none;
+    
+    background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2224%22%20height%3D%2224%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22%23666%22%20stroke-width%3D%222%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cline%20x1%3D%2212%22%20y1%3D%225%22%20x2%3D%2212%22%20y2%3D%2219%22%3E%3C%2Fline%3E%3Cline%20x1%3D%225%22%20y1%3D%2212%22%20x2%3D%2219%22%20y2%3D%2212%22%3E%3C%2Fline%3E%3C%2Fsvg%3E");
+    background-size: 14px;
+    background-position: center;
+    background-repeat: no-repeat;
+    transition: all 0.2s;
+}
+
+.add-assignee-select:hover {
+    border-color: #6c5ce7;
+    background-color: #f8f9fa;
+}
+.add-assignee-select:focus {
+    outline: none;
+    border-color: #6c5ce7;
+    box-shadow: 0 0 0 2px rgba(108, 92, 231, 0.2);
+}
+
+/* Hide the dropdown arrow in IE/Edge */
+.add-assignee-select::-ms-expand { display: none; }
+
+/* =========================================
+   14. LAYOUT & COLOR FIXES
+   ========================================= */
+
+/* FIX 1: Make dropdown options visible (Black text) */
+.add-assignee-select option {
+    color: #2d3436; /* Dark Grey */
+    background-color: white;
+}
+
+/* FIX 2: Inline Layout for Task Name & Tags */
+.task-content-wrapper {
+    display: flex;
+    flex-wrap: wrap; /* Allows tags to wrap to next line if needed */
+    align-items: center;
+    gap: 8px;
+    flex: 1;
+}
+
+.task-name {
+    font-size: 0.95rem;
+    line-height: 1.4;
+    margin-right: 5px;
+    padding-top: 2px; /* Visual alignment with checkbox */
+}
+
+/* Adjust container to sit inline */
+.assignee-container {
+    display: inline-flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    align-items: center;
+    margin-top: 0; /* Remove old margin */
+    min-height: 24px;
+}
+
+/* Ensure checkbox stays at top if text wraps */
+.task-row {
+    align-items: flex-start; 
+    padding: 8px 0;
+}
+.task-status-checkbox {
+    margin-top: 2px; /* Align with text */
+}
+
+/* =========================================
+   15. MOBILE NAVIGATION
+   ========================================= */
+
+/* Default (Hidden on Desktop) */
+.mobile-menu-btn {
+    display: none;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 10px;
+    box-shadow: none; /* Override global button style */
+}
+
+/* The 3 lines of the hamburger */
+.mobile-menu-btn span {
+    display: block;
+    width: 25px;
+    height: 3px;
+    background-color: #2d3436;
+    margin: 5px 0;
+    border-radius: 3px;
+    transition: all 0.3s;
+}
+
+/* MOBILE STYLES (Max Width 768px) */
+@media (max-width: 768px) {
+    .app-nav {
+        flex-wrap: wrap; /* Allows menu to drop to next line */
+        padding: 10px 20px;
+        height: auto; /* Allow height to grow */
+    }
+
+    .mobile-menu-btn {
+        display: block; /* Show hamburger */
+        margin-left: auto; /* Push to right */
+    }
+
+    /* Hide controls by default on mobile */
+    .nav-controls {
+        display: none;
+        width: 100%;
+        flex-direction: column;
+        gap: 10px;
+        padding-top: 15px;
+        border-top: 1px solid #eee;
+        margin-top: 10px;
+    }
+
+    /* Show controls when 'active' class is added */
+    .nav-controls.active {
+        display: flex;
+    }
+
+    /* Adjust elements for vertical layout */
+    #view-team-select {
+        width: 100%;
+        margin-right: 0;
+    }
+
+    #logout-btn {
+        margin-left: 0;
+        width: 100%;
+    }
+
+    #admin-btn {
+        width: 100%;
+    }
+    
+    /* Animation for the hamburger to 'X' */
+    .mobile-menu-btn.open span:nth-child(1) {
+        transform: rotate(45deg) translate(5px, 5px);
+    }
+    .mobile-menu-btn.open span:nth-child(2) {
+        opacity: 0;
+    }
+    .mobile-menu-btn.open span:nth-child(3) {
+        transform: rotate(-45deg) translate(7px, -6px);
+    }
+}
+
+/* =========================================
+   MYP LEVEL BADGE
+   ========================================= */
+.myp-badge {
+    position: absolute;
+    bottom: 15px;
+    right: 15px;
+    background: #f8f9fa;
+    color: #636e72;
+    padding: 4px 8px;
+    border-radius: 6px;
+    font-size: 0.75rem;
+    font-weight: 800;
+    border: 1px solid #dfe6e9;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    letter-spacing: 0.5px;
+}
