@@ -1,4 +1,3 @@
-import React from 'react';
 import type { Checkpoint, TaskProgress } from '../types';
 
 interface TimelineItemProps {

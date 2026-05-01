@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import type { Checkpoint, TaskProgress, TeamMember, TaskStatus } from '../types';
 import { getTeamMembers, saveTaskProgress } from '../services/db';
 import { useAuth } from '../contexts/AuthContext';

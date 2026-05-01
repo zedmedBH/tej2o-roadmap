@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { getMasterTasks, getTeamProgress } from '../services/db';
 import type { Checkpoint, TaskProgress } from '../types';
 import { TimelineItem } from './TimelineItem';

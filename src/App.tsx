@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { useAuth } from './contexts/AuthContext';
 import { NavBar } from './components/NavBar';
 import { Timeline } from './components/Timeline';
